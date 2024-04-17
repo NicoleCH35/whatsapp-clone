@@ -8,6 +8,7 @@ const PageContainer = ({ children, style }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    margin: 10,
     // alignItems: "center",
     // justifyContent: "center",
   },

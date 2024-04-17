@@ -28,6 +28,7 @@ const TabNavigator = () => {
         name="Settings"
         component={SettingsScreen}
         options={{
+          headerTitle: "Settings",
           tabBarIcon: ({ color, size }) => (
             <SimpleLineIcons color={color} name="settings" size={size} />
           ),

@@ -36,3 +36,17 @@ export const validatePassword = (id, value) => {
   const res = validate({ [id]: value }, { [id]: rule });
   return res && res[id];
 };
+
+// Length validation
+export const validateLength = (id, value, minLength, maxLength, allowEmpty) => {
+  const rule = {
+    presence: { allowEmpty },
+    length: {
+      minimum: minLength,
+      maximum: maxLength,
+      message: `must be between ${minLength} and ${maxLength} characters`,
+    },
+  };
+  const res = validate({ [id]: value }, { [id]: rule });
+  return res && res[id];
+};

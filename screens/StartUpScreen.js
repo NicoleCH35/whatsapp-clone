@@ -4,7 +4,8 @@ import colors from "../constants/colors";
 import styles from "../constants/styles";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useDispatch } from "react-redux";
-import { attemptedLogin } from "../store/authSlice";
+import { attemptedLogin, authenticate } from "../store/authSlice";
+import { getUser } from "../utils/actions/user";
 
 const StartUpScreen = () => {
   const dispatch = useDispatch();
@@ -17,7 +18,7 @@ const StartUpScreen = () => {
       return;
     }
 
-    const parsedData = JSON.parse(storedAuthInfo);
+    const parsedData = JSON.parse(storage);
     const { token, id, expiryDate: expiryDateString } = parsedData;
 
     const expiryDate = new Date(expiryDateString);
@@ -25,11 +26,14 @@ const StartUpScreen = () => {
       dispatch(attemptedLogin());
       return;
     }
+
+    const user = await getUser(id);
+    dispatch(authenticate({ user, token }));
   };
 
   useEffect(() => {
     attemptLogin();
-  }, []);
+  }, [dispatch]);
 
   return (
     <View style={styles.center}>

@@ -1,6 +1,10 @@
-import { initializeApp } from "firebase/app";
+import { initializeApp, getApps, getApp } from "firebase/app";
 // import { getAnalytics } from "firebase/analytics";
-import { initializeAuth, getReactNativePersistence } from "firebase/auth";
+import {
+  initializeAuth,
+  getReactNativePersistence,
+  getAuth,
+} from "firebase/auth";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export const getFirebase = () => {
@@ -16,12 +20,21 @@ export const getFirebase = () => {
       "https://messaging-clone-97db8-default-rtdb.europe-west1.firebasedatabase.app",
   };
 
-  const app = initializeApp(firebaseConfig);
+  let app;
+  let auth;
+  if (!getApps().length) {
+    try {
+      app = initializeApp(firebaseConfig);
+      auth = initializeAuth(app, {
+        persistence: getReactNativePersistence(AsyncStorage),
+      });
+    } catch (error) {
+      console.log("Firebase initialization error");
+    }
+  }
 
-  const auth = initializeAuth(app, {
-    persistence: getReactNativePersistence(AsyncStorage),
-  });
-  // const analytics = getAnalytics(app);
+  app = getApp();
+  auth = getAuth(app);
 
   return app;
 };

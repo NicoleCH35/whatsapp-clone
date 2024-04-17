@@ -1,6 +1,5 @@
-import { StatusBar } from "expo-status-bar";
-import { StyleSheet, Text } from "react-native";
-import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
+import { StyleSheet } from "react-native";
+import { SafeAreaProvider } from "react-native-safe-area-context";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect, useState, useCallback } from "react";
 import * as Font from "expo-font";
@@ -9,8 +8,10 @@ import AppNavigator from "./navigation/AppNavigator";
 import colors from "./constants/colors";
 import { Provider } from "react-redux";
 import { store } from "./store/store";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 SplashScreen.preventAutoHideAsync();
+// AsyncStorage.clear();
 
 export default function App() {
   const [loaded, setLoaded] = useState(false);

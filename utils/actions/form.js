@@ -2,6 +2,7 @@ import {
   validateString,
   validateEmail,
   validatePassword,
+  validateLength,
 } from "../constraints";
 
 export const validateInput = (input, value) => {
@@ -9,12 +10,11 @@ export const validateInput = (input, value) => {
     case "firstName":
     case "lastName":
       return validateString(input, value);
-      break;
     case "email":
       return validateEmail(input, value);
-      break;
     case "password":
       return validatePassword(input, value);
-      break;
+    case "about":
+      return validateLength(input, value, 0, 150, true);
   }
 };

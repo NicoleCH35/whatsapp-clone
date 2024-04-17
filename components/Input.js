@@ -1,12 +1,23 @@
-import React from "react";
+import React, { useState } from "react";
 import { StyleSheet, Text, TextInput, View } from "react-native";
 import colors from "../constants/colors";
 
-const Input = ({ id, label, icon, error, onInputChange, ...rest }) => {
+const Input = ({
+  id,
+  label,
+  icon,
+  error,
+  onInputChange,
+  initialValue,
+  ...rest
+}) => {
   const Icon = icon;
+
+  const [value, setValue] = useState(initialValue);
 
   const onChange = (text) => {
     if (onInputChange) {
+      setValue(text);
       onInputChange(id, text);
     }
   };
@@ -16,7 +27,12 @@ const Input = ({ id, label, icon, error, onInputChange, ...rest }) => {
       <Text style={styles.label}>{label}</Text>
       <View style={styles.inputContainer}>
         {icon && <Icon style={styles.icon} />}
-        <TextInput {...rest} style={styles.input} onChangeText={onChange} />
+        <TextInput
+          style={styles.input}
+          onChangeText={onChange}
+          value={value}
+          {...rest}
+        />
       </View>
       {error && (
         <View style={styles.errorContainer}>
