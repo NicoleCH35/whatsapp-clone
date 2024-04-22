@@ -1,58 +1,63 @@
-import React, { useReducer, useCallback, useState, useEffect } from "react";
+import React, { useCallback, useEffect, useReducer, useState } from "react";
 import Input from "../components/Input";
-import { AntDesign } from "@expo/vector-icons";
 import SubmitButton from "../components/SubmitButton";
-import { validateInput } from "../utils/actions/form";
-import { reducer } from "../utils/reducers/form";
-import { signIn } from "../utils/actions/auth";
+import { Feather } from "@expo/vector-icons";
+
+import { validateInput } from "../utils/actions/formActions";
+import { reducer } from "../utils/reducers/formReducer";
+import { signIn } from "../utils/actions/authActions";
 import { ActivityIndicator, Alert } from "react-native";
 import { useDispatch } from "react-redux";
 import colors from "../constants/colors";
 
-const DEV = true;
+const isTestMode = true;
 
-const initialFormState = {
-  inputValid: {
-    email: DEV,
-    password: DEV,
+const initialState = {
+  inputValues: {
+    email: isTestMode ? "nicolech35+meg@gmail.com" : "",
+    password: isTestMode ? "qwerty" : "",
   },
-  values: {
-    email: DEV ? "nicolech35+35@gmail.com" : "",
-    password: DEV ? "qwerty" : "",
+  inputValidities: {
+    email: isTestMode,
+    password: isTestMode,
   },
-  formValid: DEV,
+  formIsValid: isTestMode,
 };
 
-const SignInForm = () => {
-  const [formState, dispatchFormState] = useReducer(reducer, initialFormState);
-  const [error, setError] = useState(null);
-  const [loading, setLoading] = useState(false);
-
+const SignInForm = (props) => {
   const dispatch = useDispatch();
 
-  useEffect(() => {
-    if (error) {
-      Alert.alert("Error", error, [{ text: "Okay" }]);
-    }
-  }, [error]);
+  const [error, setError] = useState();
+  const [isLoading, setIsLoading] = useState(false);
+  const [formState, dispatchFormState] = useReducer(reducer, initialState);
 
-  const inputChangeHandler = useCallback(
-    (id, value) => {
-      const result = validateInput(id, value);
-      dispatchFormState({ id, result, value });
+  const inputChangedHandler = useCallback(
+    (inputId, inputValue) => {
+      const result = validateInput(inputId, inputValue);
+      dispatchFormState({ inputId, validationResult: result, inputValue });
     },
     [dispatchFormState]
   );
 
+  useEffect(() => {
+    if (error) {
+      Alert.alert("An error occured", error, [{ text: "Okay" }]);
+    }
+  }, [error]);
+
   const authHandler = useCallback(async () => {
     try {
-      setLoading(true);
-      const action = signIn(formState.values.email, formState.values.password);
+      setIsLoading(true);
+
+      const action = signIn(
+        formState.inputValues.email,
+        formState.inputValues.password
+      );
       setError(null);
       await dispatch(action);
     } catch (error) {
       setError(error.message);
-      setLoading(false);
+      setIsLoading(false);
     }
   }, [dispatch, formState]);
 
@@ -61,31 +66,39 @@ const SignInForm = () => {
       <Input
         id="email"
         label="Email"
-        icon={(props) => <AntDesign name="mail" size={15} {...props} />}
-        onInputChange={inputChangeHandler}
-        keyboardType="email-address"
+        icon="mail"
+        iconPack={Feather}
         autoCapitalize="none"
-        defaultValue={formState.values.email}
-        error={formState.inputValid.email}
+        keyboardType="email-address"
+        onInputChanged={inputChangedHandler}
+        initialValue={formState.inputValues.email}
+        errorText={formState.inputValidities["email"]}
       />
+
       <Input
         id="password"
         label="Password"
-        icon={(props) => <AntDesign name="lock1" size={15} {...props} />}
-        onInputChange={inputChangeHandler}
-        secureTextEntry
-        defaultValue={formState.values.password}
-        error={formState.inputValid.password}
+        icon="lock"
+        iconPack={Feather}
         autoCapitalize="none"
+        secureTextEntry
+        onInputChanged={inputChangedHandler}
+        initialValue={formState.inputValues.password}
+        errorText={formState.inputValidities["password"]}
       />
 
-      {loading ? (
-        <ActivityIndicator size={"small"} color={colors.primary} />
+      {isLoading ? (
+        <ActivityIndicator
+          size={"small"}
+          color={colors.primary}
+          style={{ marginTop: 10 }}
+        />
       ) : (
         <SubmitButton
-          title="Sign In"
+          title="Sign in"
           onPress={authHandler}
-          disabled={!formState.formValid}
+          style={{ marginTop: 20 }}
+          disabled={!formState.formIsValid}
         />
       )}
     </>

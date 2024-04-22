@@ -1,45 +1,54 @@
 import React, { useState } from "react";
-import { SafeAreaView } from "react-native-safe-area-context";
-import PageContainer from "../components/PageContainer";
-import colors from "../constants/colors";
-import SignUpForm from "../components/SignUpForm";
-import SignInForm from "../components/SignInForm";
 import {
-  TouchableOpacity,
+  View,
   Text,
   StyleSheet,
-  View,
+  TouchableOpacity,
   Image,
   ScrollView,
   KeyboardAvoidingView,
   Platform,
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+
+import PageContainer from "../components/PageContainer";
+import SignInForm from "../components/SignInForm";
+import SignUpForm from "../components/SignUpForm";
+import colors from "../constants/colors";
+import { AntDesign } from "@expo/vector-icons";
+
 import logo from "../assets/icon.png";
 
-const AuthScreen = ({}) => {
-  const [isSignUp, setIsSignUp] = useState(true);
+const AuthScreen = (props) => {
+  const [isSignUp, setIsSignUp] = useState(false);
+
   return (
     <SafeAreaView style={{ flex: 1 }}>
-      <PageContainer style={{ backgroundColor: colors.white }}>
+      <PageContainer>
         <ScrollView>
           <KeyboardAvoidingView
-            style={{ flex: 1, justifyContent: "center" }}
+            style={styles.keyboardAvoidingView}
             behavior={Platform.OS === "ios" ? "height" : undefined}
             keyboardVerticalOffset={100}
           >
             <View style={styles.imageContainer}>
-              <Image style={styles.image} source={logo} />
+              <AntDesign
+                name="wechat"
+                size={100}
+                color={colors.blue}
+                style={styles.image}
+              />
+              {/* <Image style={styles.image} source={logo} resizeMode="contain" /> */}
             </View>
 
             {isSignUp ? <SignUpForm /> : <SignInForm />}
+
             <TouchableOpacity
+              onPress={() => setIsSignUp((prevState) => !prevState)}
               style={styles.linkContainer}
-              onPress={() => {
-                setIsSignUp(!isSignUp);
-              }}
             >
               <Text style={styles.link}>{`Switch to ${
-                isSignUp ? "Sign In" : "Sign Up"
+                isSignUp ? "sign in" : "sign up"
               }`}</Text>
             </TouchableOpacity>
           </KeyboardAvoidingView>
@@ -57,16 +66,20 @@ const styles = StyleSheet.create({
   },
   link: {
     color: colors.blue,
-    fontFamily: "semiBold",
+    fontFamily: "medium",
+    letterSpacing: 0.3,
   },
   imageContainer: {
     justifyContent: "center",
     alignItems: "center",
-    marginVertical: 15,
   },
   image: {
-    width: 100,
-    height: 100,
+    // width: "50%",
+    marginTop: 50,
+  },
+  keyboardAvoidingView: {
+    flex: 1,
+    justifyContent: "center",
   },
 });
 

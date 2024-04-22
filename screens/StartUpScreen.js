@@ -1,42 +1,42 @@
 import React, { useEffect } from "react";
 import { ActivityIndicator, View } from "react-native";
 import colors from "../constants/colors";
-import styles from "../constants/styles";
+import commonStyles from "../constants/styles";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useDispatch } from "react-redux";
-import { attemptedLogin, authenticate } from "../store/authSlice";
-import { getUser } from "../utils/actions/user";
+import { authenticate, setDidTryAutoLogin } from "../store/authSlice";
+import { getUserData } from "../utils/actions/userActions";
 
 const StartUpScreen = () => {
   const dispatch = useDispatch();
 
-  const attemptLogin = async () => {
-    const storage = await AsyncStorage.getItem("user");
-
-    if (!storage) {
-      dispatch(attemptedLogin());
-      return;
-    }
-
-    const parsedData = JSON.parse(storage);
-    const { token, id, expiryDate: expiryDateString } = parsedData;
-
-    const expiryDate = new Date(expiryDateString);
-    if (expiryDate <= new Date() || !token || !id) {
-      dispatch(attemptedLogin());
-      return;
-    }
-
-    const user = await getUser(id);
-    dispatch(authenticate({ user, token }));
-  };
-
   useEffect(() => {
-    attemptLogin();
+    const tryLogin = async () => {
+      const storedAuthInfo = await AsyncStorage.getItem("userData");
+
+      if (!storedAuthInfo) {
+        dispatch(setDidTryAutoLogin());
+        return;
+      }
+
+      const parsedData = JSON.parse(storedAuthInfo);
+      const { token, userId, expiryDate: expiryDateString } = parsedData;
+
+      const expiryDate = new Date(expiryDateString);
+      if (expiryDate <= new Date() || !token || !userId) {
+        dispatch(setDidTryAutoLogin());
+        return;
+      }
+
+      const userData = await getUserData(userId);
+      dispatch(authenticate({ token: token, userData }));
+    };
+
+    tryLogin();
   }, [dispatch]);
 
   return (
-    <View style={styles.center}>
+    <View style={commonStyles.center}>
       <ActivityIndicator size="large" color={colors.primary} />
     </View>
   );
